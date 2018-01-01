@@ -1,11 +1,10 @@
 let PORT = 8000;
-let HOST = '127.0.0.1';
 
 let net = require('net');
 
 var clients = [];
 
-net.createServer( (socket) => {
+const requestHandler=(socket) => {
 
   socket.name = socket.remoteAddress + ":" + socket.remotePort
   socket.name=socket.name.slice(socket.name.indexOf('f:')+2);
@@ -24,14 +23,17 @@ net.createServer( (socket) => {
     displayOnConsole(socket.name + " left the chat.\n");
   });
 
-  function displayOnConsole(message, sender) {
-    clients.forEach(function (client) {
-      if (client === sender) return;
-      client.write(message);
-    });
-    process.stdout.write(message+'\n')
-  }
+};
 
-}).listen(PORT);
+const displayOnConsole=function(message, sender) {
+  clients.forEach(function (client) {
+    if (client === sender) return;
+    client.write(message);
+  });
+  process.stdout.write(message+'\n')
+}
+
+let server=net.createServer(requestHandler)
+server.listen(PORT);
 
 console.log(`Chat server running at port ${PORT}\n`);
